@@ -9,6 +9,36 @@
 import socket
 import threading
 
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)      # Creating the server
+
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)    # Working on localhost need this
+
+server.bind(("localhost", 12321))
+server.listen(5)
+
+
+clientSocket, clientAddress = server.accept()
+
+
+
+
+# message = clientSocket.recv(1024)               # Expect "Hello Server"
+
+# print(f"Client sent: {message.decode()}")
+
+# clientSocket.send("Hello client.".encode())
+
+msg = ""
+while msg != "quit":
+    msg = clientSocket.recv(1024).decode()          # Received message from client
+    print(f"Client sent: {msg}")
+    clientSocket.send(msg.encode())
+
+
+
+clientSocket.close()
+server.close()
+
 # Use this file to write your server logic
 # You will need to support at least two clients
 # You will need to keep track of where on the screen (x,y coordinates) each paddle is, the score 
