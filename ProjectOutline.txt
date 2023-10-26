@@ -1,0 +1,71 @@
+CODE STUFF!
+
+Client:
+* Communicate with server about info for current game state
+  	-List of things to be communicated:
+	-Send location of user's pong paddle
+	-Location of ball
+	-Current score
+
+Server:
+* Communicate with 2 networks simultaneously using sockets
+	-Threads will be used for this
+* Responsible for relaying the information sent by the clients
+
+---
+
+We need a "readme.txt" that explains how to run our code
+
+We also *each* need a project report
+
+Please place your group’s report and readme in the top level of your project and zip your entire project
+together
+
+If your project requires extra libraries, please include a pip requirements file called
+“requirements.txt” in the top level also and note that in the readme. If you’re unsure how to create a
+requirements file, follow this guide: https://pip.pypa.io/en/stable/reference/requirements-file-format/
+
+Coding Style:
+
+This section will determine how “well written & commented” the coding aspect of your project is.
+
+Type Hinting. Type hinting is required for all methods you write. If you don’t know what type hinting is in
+Python, please read this: https://dev.to/decorator_factory/type-hints-in-python-tutorial-3pel
+
+Project Files. Please use the following template for your project files:
+
+# Contributing Authors: <Anyone who touched the code>
+# Email Addresses: <Your uky.edu email addresses>
+# Date: <The date the file was last edited>
+# Purpose: <How this file contributes to the project>
+# Misc: <Not Required. Anything else you might want to include>
+
+Methods. Please use the following template for all methods you write:
+
+# Author: <Who wrote this method>
+# Purpose: <What should this method do>
+# Pre: <What preconditions does this method expect to be true? Ex. This method
+expects the program to be in X state before being called>
+# Post: <What postconditions are true after this method is called? Ex. This method
+changed global variable X to Y>
+
+Report
+
+Your group will need to write a report with sections outlined below. This is a technical paper so please do not
+be pedantic in the hopes of earning more points. Write exactly as much as you need per section and no more.
+The goal of this paper is to quickly explain to someone unfamiliar with the project (or yourself in a few years)
+why and how you did it. If English is not your first language and you have difficulty with English grammar or
+spelling, please ask a peer to review it, or utilize the University of Kentucky’s writing center:
+https://wrd.as.uky.edu/writing-center
+
+Required Sections.
+
+• Background: Briefly describe the problem you are solving.
+• Design: Describe how you designed your implementation (design before you start coding)
+• Implementation: How was your design implemented (a UML diagram and/or pseudo code may be
+helpful here)
+• Challenges: What didn’t go as planned and how did you adapt?
+• Lessons Learned: What did you not know before starting this project that you now do?
+• (Optional) Known Bugs: Document the bugs you were unable to fix here and how you would solve
+them given more time. You’ll still lose points but not as many.
+• Conclusions: Summary of the work and final considerations.
