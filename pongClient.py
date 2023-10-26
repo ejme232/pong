@@ -10,7 +10,7 @@ import pygame
 import tkinter as tk
 import sys
 import socket
-# spheres
+# sample text
 from assets.code.helperCode import *
 
 # This is the main game loop.  For the most part, you will not need to modify this.  The sections
