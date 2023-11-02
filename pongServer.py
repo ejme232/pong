@@ -13,7 +13,7 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)      # Creating the s
 
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)    # Working on localhost need this
 
-server.bind(("localhost", 12321))
+server.bind(("10.47.223.49", 12321))
 server.listen(5)
 
 
@@ -22,11 +22,12 @@ clientSocket, clientAddress = server.accept()
 
 
 
-# message = clientSocket.recv(1024)               # Expect "Hello Server"
+message = clientSocket.recv(1024)               # Expect "Hello Server"
 
-# print(f"Client sent: {message.decode()}")
+print(f"Client sent: {message.decode()}")
 
-# clientSocket.send("Hello client.".encode())
+clientSocket.send("200".encode())
+clientSocket.send("left".encode())
 
 msg = ""
 while msg != "quit":
