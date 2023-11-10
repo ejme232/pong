@@ -9,36 +9,44 @@
 import socket
 import threading
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)      # Creating the server
+import socket
+import threading
 
-server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)    # Working on localhost need this
+def handle_client(clientSocket, clientAddress):
+    try:
+        message = clientSocket.recv(1024).decode()
+        print(f"Client {clientAddress} sent: {message}")
 
-server.bind(("10.47.223.49", 12321))
+        clientSocket.send("200".encode())
+        clientSocket.send("left".encode())
+
+        msg = ""
+        while msg != "quit":
+            msg = clientSocket.recv(1024).decode()
+            print(f"Client {clientAddress} sent: {msg}")
+            clientSocket.send(msg.encode())
+
+    except Exception as e:
+        print(f"Error with client {clientAddress}: {str(e)}")
+
+    finally:
+        clientSocket.close()
+        print(f"Connection with client {clientAddress} closed.")
+
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+server.bind(("10.47.59.210", 12321))
 server.listen(5)
 
+try:
+    while True:
+        clientSocket, clientAddress = server.accept()
 
-clientSocket, clientAddress = server.accept()
+        client_thread = threading.Thread(target=handle_client, args=(clientSocket, clientAddress))
+        client_thread.start()
 
-
-
-
-message = clientSocket.recv(1024)               # Expect "Hello Server"
-
-print(f"Client sent: {message.decode()}")
-
-clientSocket.send("200".encode())
-clientSocket.send("left".encode())
-
-msg = ""
-while msg != "quit":
-    msg = clientSocket.recv(1024).decode()          # Received message from client
-    print(f"Client sent: {msg}")
-    clientSocket.send(msg.encode())
-
-
-
-clientSocket.close()
-server.close()
+finally:
+    server.close()
 
 # Use this file to write your server logic
 # You will need to support at least two clients
