@@ -53,6 +53,7 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind(("10.47.189.133", 12321)) #MY IP
 server.listen(5)
+lock=threading.Lock()
 
 try:
     while True:
@@ -63,7 +64,7 @@ try:
         print(f"Thread {len(currentConnections)} started with {clientAddress}")
 
         if(threading.active_count()>=2):
-            notify_all()
+            threading.Event()
 
 finally:
     server.close()
