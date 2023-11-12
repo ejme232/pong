@@ -18,11 +18,11 @@ def handle_client(clientSocket:socket, clientAddress:str):
         print(f"Client {clientAddress} sent: {message}")
 
         threading.wait()
-        clientSocket.send("GS".encode())
-
-        clientSocket.send("640".encode())
-        clientSocket.send("480".encode())
-        clientSocket.send("left".encode())
+        # Define the game information
+        screen_width = 640  # Set the desired width
+        screen_height = 480  # Set the desired height
+        side = "left"  # Replace with the actual side information
+        game_info = f"{screen_width},{screen_height},{side}"
 
         msg = ""
         while msg != "quit": 
