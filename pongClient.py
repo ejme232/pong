@@ -178,29 +178,28 @@ def joinServer(ip:str, port:str, errorLabel:tk.Label, app:tk.Tk) -> None:
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Get the required information from your server (screen width, height & player paddle, "left or "right)
-    client.connect((ip,int(port)))                            # Connecting to server
+    try:
+        client.connect((ip,int(port)))                            # Connecting to server
 
-    client.send("Hello Server".encode())
+        game_info = client.recv(1024).decode()
 
-    resp = client.recv(1024)
+        # Parse game information
+        screenWidth, screenHeight, side = game_info.split(",")
+        screenWidth, screenHeight = int(screenWidth), int(screenHeight)
 
-    resp = client.recv(1024)
-    screenWidth=int(resp)
-    resp = client.recv(1024)
-    screenHeight=int(resp)
+        # If you have messages you'd like to show the user use the errorLabel widget like so
+        errorLabel.config(text=f"Some update text. You input: IP: {ip}, Port: {port}")
+        # You may or may not need to call this, depending on how many times you update the label
+        errorLabel.update()     
 
-    resp = client.recv(1024)
-    side=resp
+        # Close this window and start the game with the info passed to you from the server
+        app.withdraw()     # Hides the window (we'll kill it later)
+        playGame(screenWidth, screenHeight, side, client)  # User will be either left or right paddle
+        app.quit()         # Kills the window
 
-    # If you have messages you'd like to show the user use the errorLabel widget like so
-    errorLabel.config(text=f"Some update text. You input: IP: {ip}, Port: {port}")
-    # You may or may not need to call this, depending on how many times you update the label
-    errorLabel.update()     
-
-    # Close this window and start the game with the info passed to you from the server
-    app.withdraw()     # Hides the window (we'll kill it later)
-    playGame(screenWidth, screenHeight, side, client)  # User will be either left or right paddle
-    app.quit()         # Kills the window
+    except Exception as e:
+        errorLabel.config(text=f"Error: {str(e)}")
+        errorLabel.update()
 
 
 # This displays the opening screen, you don't need to edit this (but may if you like)
