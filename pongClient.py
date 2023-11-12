@@ -83,7 +83,7 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         # Your code here to send an update to the server on your paddle's information,
         # where the ball is and the current score.
         # Feel free to change when the score is updated to suit your needs/requirements
-        client.send()
+        client.send(playerPaddleObj.moving)
         
         # =========================================================================================
 
@@ -183,10 +183,12 @@ def joinServer(ip:str, port:str, errorLabel:tk.Label, app:tk.Tk) -> None:
     client.send("Hello Server".encode())
 
     resp = client.recv(1024)
+
+    resp = client.recv(1024)
     screenWidth=int(resp)
+    resp = client.recv(1024)
     screenHeight=int(resp)
 
-    client.send("Second value now pls".encode())
     resp = client.recv(1024)
     side=resp
 

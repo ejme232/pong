@@ -10,17 +10,23 @@ import socket
 import threading
 import random
 
+currentConnections=[]
+
 def handle_client(clientSocket:socket, clientAddress:str):
     try:
         message = clientSocket.recv(1024).decode()
         print(f"Client {clientAddress} sent: {message}")
 
-        clientSocket.send("200".encode())
+        threading.wait()
+        clientSocket.send("GS".encode())
+
+        clientSocket.send("640".encode())
+        clientSocket.send("480".encode())
         clientSocket.send("left".encode())
 
         msg = ""
-        while msg != "quit":
-            msg = clientSocket.recv(1024).decode()
+        while msg != "quit": 
+            msg = clientSocket.recv(1024).decode() #Paddle pos receive
             print(f"Client {clientAddress} sent: {msg}")
             clientSocket.send(msg.encode())
 
@@ -38,17 +44,26 @@ def chooseplayers(total:int):
 def choosesides():
   return(random.sample(["left","right"],2))
 
+def createThread(clientSocket:socket,clientAddress:str):
+    client_thread = threading.Thread(target=handle_client, args=(clientSocket, clientAddress))
+    client_thread.start()
+    return(client_thread)
+
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-server.bind(("10.47.59.210", 12321))
+server.bind(("10.47.189.133", 12321)) #MY IP
 server.listen(5)
 
 try:
     while True:
         clientSocket, clientAddress = server.accept()
 
-        client_thread = threading.Thread(target=handle_client, args=(clientSocket, clientAddress))
-        client_thread.start()
+        t=createThread(clientSocket,clientAddress)
+        currentConnections.append(t)
+        print(f"Thread {len(currentConnections)} started with {clientAddress}")
+
+        if(threading.active_count()>=2):
+            notify_all()
 
 finally:
     server.close()
