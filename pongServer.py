@@ -8,6 +8,7 @@
 
 import socket
 import threading
+import random
 
 def handle_client(clientSocket:socket, clientAddress:str):
     try:
@@ -29,6 +30,13 @@ def handle_client(clientSocket:socket, clientAddress:str):
     finally:
         clientSocket.close()
         print(f"Connection with client {clientAddress} closed.")
+
+def chooseplayers(total:int):
+  p=random.sample(range(0,total),2)
+  return(p)
+
+def choosesides():
+  return(random.sample(["left","right"],2))
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
