@@ -9,10 +9,7 @@
 import socket
 import threading
 
-import socket
-import threading
-
-def handle_client(clientSocket, clientAddress):
+def handle_client(clientSocket:socket, clientAddress:str):
     try:
         message = clientSocket.recv(1024).decode()
         print(f"Client {clientAddress} sent: {message}")
