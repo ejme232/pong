@@ -1,8 +1,8 @@
 # =================================================================================================
-# Contributing Authors:	    <Anyone who touched the code>
-# Email Addresses:          <Your uky.edu email addresses>
-# Date:                     <The date the file was last edited>
-# Purpose:                  <How this file contributes to the project>
+# Contributing Authors:	    Evan Meyers, Connor Day
+# Email Addresses:          evan.meyers@uky.edu, connor.day@uky.edu
+# Date:                     11/17/2023
+# Purpose:                  Contains code for running server-side operations.
 # Misc:                     <Not Required.  Anything else you might want to include>
 # =================================================================================================
 
@@ -10,13 +10,16 @@ import socket
 import threading
 import random
 
-currentConnections=[]
 # Define the game information
 screen_width = 640  # Set the desired width
 screen_height = 480  # Set the desired height
 side = "left"  # Replace with the actual side information
 
 def handle_client(clientSocket:socket, clientAddress:str):
+    # Purpose:      This method is fired when the join button is clicked
+    # Arguments:
+    # clientSocket: Contains socket information for this client
+    # clientAddress:Contains address for this client as a str object
     try:
         game_info = f"{screen_width},{screen_height},{side}"
 
@@ -37,16 +40,21 @@ def chooseplayers(total:int):
   return(p)
 
 def choosesides():
+  # Purpose:        Chooses side for each connection randomly
   return(random.sample(["left","right"],2))
 
 def createThread(clientSocket:socket,clientAddress:str):
+    #   Purpose:        Creates thread for the given socket and address
+    #   clientSocket: Contains socket information for this client
+    #   clientAddress:Contains address for this client as a str object
     client_thread = threading.Thread(target=handle_client, args=(clientSocket, clientAddress))
     client_thread.start()
     return(client_thread)
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-server.bind(("10.47.189.133", 12321)) #MY IP
+myip=socket.gethostbyname(socket.gethostname()) # Stores user's ip (TEST THIS!!)
+server.bind((myip, 12321))
 server.listen(5)
 lock=threading.Lock()
 
