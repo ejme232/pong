@@ -1,8 +1,8 @@
 # =================================================================================================
-# Contributing Authors:	    <Anyone who touched the code>
-# Email Addresses:          <Your uky.edu email addresses>
-# Date:                     <The date the file was last edited>
-# Purpose:                  <How this file contributes to the project>
+# Contributing Authors:	    Evan Meyers, Connor Day
+# Email Addresses:          evan.meyers@uky.edu, connor.day@uky.edu
+# Date:                     11/17/2023
+# Purpose:                  Contains code for running client operations.
 # Misc:                     <Not Required.  Anything else you might want to include>
 # =================================================================================================
 
@@ -10,7 +10,7 @@ import pygame
 import tkinter as tk
 import sys
 import socket
-# sample text
+
 from assets.code.helperCode import *
 
 # This is the main game loop.  For the most part, you will not need to modify this.  The sections
@@ -83,7 +83,7 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         # Your code here to send an update to the server on your paddle's information,
         # where the ball is and the current score.
         # Feel free to change when the score is updated to suit your needs/requirements
-        client.send(playerPaddleObj.moving)
+        client.send(playerPaddleObj.moving) #Sends current status of this client's paddle
         
         # =========================================================================================
 
@@ -179,8 +179,9 @@ def joinServer(ip:str, port:str, errorLabel:tk.Label, app:tk.Tk) -> None:
 
     # Get the required information from your server (screen width, height & player paddle, "left or "right)
     try:
-        client.connect((ip,int(port)))                            # Connecting to server
+        client.connect((ip,int(port))) # Connecting to server
 
+        # Receive single message with all game info
         game_info = client.recv(1024).decode()
 
         # Parse game information
