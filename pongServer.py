@@ -23,6 +23,9 @@ def handle_client(clientSocket:socket, clientAddress:str):
     try:
         clientSocket.send("You're connected.".encode())
 
+        while(threading.active_count()<3):
+            continue
+
         if(threading.active_count()>=3):
             game_info = f"{screen_width},{screen_height},{side}"
             clientSocket.send(game_info.encode())

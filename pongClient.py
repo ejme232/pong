@@ -182,6 +182,9 @@ def joinServer(ip:str, port:str, errorLabel:tk.Label, app:tk.Tk) -> None:
         client.connect((ip,int(port))) # Connecting to server
 
         msg=client.recv(1024).decode()
+        if(msg=="You're connected."):
+            while(msg!="Ready"):
+                msg=client.recv(1024).decode()
         # Receive single message with all game info
         game_info = client.recv(1024).decode()
 
