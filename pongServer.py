@@ -21,12 +21,15 @@ def handle_client(clientSocket:socket, clientAddress:str):
     # clientSocket: Contains socket information for this client
     # clientAddress:Contains address for this client as a str object
     try:
-        game_info = f"{screen_width},{screen_height},{side}"
+        clientSocket.send("You're connected.".encode())
 
-        msg = ""
-        while msg != "quit": 
-            msg = clientSocket.recv(1024).decode() #Paddle pos receive
-            clientSocket.send(msg.encode())
+        if(threading.active_count()>=2):
+            game_info = f"{screen_width},{screen_height},{side}"
+            clientSocket.send(game_info.encode())
+            msg = ""
+            while msg != "quit": #THE GAME IS BEING PLAYED!!!
+                msg = clientSocket.recv(1024).decode() #Paddle pos receive
+                clientSocket.send(msg.encode())
 
     except Exception as e:
         print(f"Error with client {clientAddress}: {str(e)}")
