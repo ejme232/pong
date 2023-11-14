@@ -22,11 +22,15 @@ def handle_client(clientSocket:socket, clientAddress:str):
     # clientAddress:Contains address for this client as a str object
     try:
         clientSocket.send("You're connected.".encode())
+        msg=""
 
         while(threading.active_count()<3):
             continue
 
         if(threading.active_count()>=3):
+            clientSocket.send("Ready".encode())
+            while(msg!="Starting"):
+                msg=clientSocket.recv(1024).decode()
             game_info = f"{screen_width},{screen_height},{side}"
             clientSocket.send(game_info.encode())
             msg = ""

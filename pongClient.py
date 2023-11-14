@@ -186,6 +186,7 @@ def joinServer(ip:str, port:str, errorLabel:tk.Label, app:tk.Tk) -> None:
             while(msg!="Ready"):
                 msg=client.recv(1024).decode()
         # Receive single message with all game info
+        client.send("Starting".encode())
         game_info = client.recv(1024).decode()
 
         # Parse game information
