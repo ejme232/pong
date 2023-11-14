@@ -49,7 +49,6 @@ def createThread(clientSocket:socket,clientAddress:str):
     #   clientAddress:Contains address for this client as a str object
     client_thread = threading.Thread(target=handle_client, args=(clientSocket, clientAddress))
     client_thread.start()
-    return(client_thread)
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -61,7 +60,7 @@ lock=threading.Lock()
 try:
     while True:
         clientSocket, clientAddress = server.accept()
-
+        createThread(clientSocket,clientAddress)
         print(f"Thread {len(threading.active_count())} started with {clientAddress}")
 
         if(threading.active_count()>=2):
