@@ -62,9 +62,7 @@ try:
     while True:
         clientSocket, clientAddress = server.accept()
 
-        t=createThread(clientSocket,clientAddress)
-        currentConnections.append(t)
-        print(f"Thread {len(currentConnections)} started with {clientAddress}")
+        print(f"Thread {len(threading.active_count())} started with {clientAddress}")
 
         if(threading.active_count()>=2):
             threading.Event()
