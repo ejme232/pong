@@ -23,7 +23,7 @@ def handle_client(clientSocket:socket, clientAddress:str):
     try:
         clientSocket.send("You're connected.".encode())
 
-        if(threading.active_count()>=2):
+        if(threading.active_count()>=3):
             game_info = f"{screen_width},{screen_height},{side}"
             clientSocket.send(game_info.encode())
             msg = ""
@@ -64,7 +64,7 @@ try:
     while True:
         clientSocket, clientAddress = server.accept()
         createThread(clientSocket,clientAddress)
-        print(f"Thread {len(threading.active_count())} started with {clientAddress}")
+        print(f"Thread {threading.active_count()} started with {clientAddress}")
 
         if(threading.active_count()>=2):
             threading.Event()
