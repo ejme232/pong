@@ -13,7 +13,7 @@ import random
 # Define the game information
 screen_width = 640  # Set the desired width
 screen_height = 480  # Set the desired height
-side = "left"  # Replace with the actual side information
+sides = ["left","right"]  # Replace with the actual side information
 
 def handle_client(clientSocket:socket, clientAddress:str):
     # Purpose:      This method is fired when the join button is clicked
@@ -31,12 +31,13 @@ def handle_client(clientSocket:socket, clientAddress:str):
             clientSocket.send("Ready".encode())
             while(msg!="Starting"):
                 msg=clientSocket.recv(1024).decode()
+            side=sides[threading.current_thread()%2]
             game_info = f"{screen_width},{screen_height},{side}"
             clientSocket.send(game_info.encode())
             msg = ""
             while msg != "quit": #THE GAME IS BEING PLAYED!!!
                 msg = clientSocket.recv(1024).decode() #Paddle pos receive
-                clientSocket.send(msg.encode())
+                
 
     except Exception as e:
         print(f"Error with client {clientAddress}: {str(e)}")
