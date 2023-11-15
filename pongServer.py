@@ -13,13 +13,25 @@ import random
 # Define the game information
 screen_width = 640  # Set the desired width
 screen_height = 480  # Set the desired height
-sides = ["left","right"]  # Replace with the actual side information
+side = "left"  # Replace with the actual side information
+
+# Define initial game state
+paddle_positions = {"left": 0, "right": 0}  # Initial positions of paddles
+scores = {"left": 0, "right": 0}  # Initial scores for players
+ball_position = {"x": 0, "y": 0}  # Initial position of the ball
+
+# Store client sockets
+client_sockets = []
 
 def handle_client(clientSocket:socket, clientAddress:str):
     # Purpose:      This method is fired when the join button is clicked
     # Arguments:
     # clientSocket: Contains socket information for this client
     # clientAddress:Contains address for this client as a str object
+    global client_sockets
+    # Add the client socket to the list
+    client_sockets.append(clientSocket)
+    
     try:
         clientSocket.send("You're connected.".encode())
         msg=""
@@ -31,18 +43,27 @@ def handle_client(clientSocket:socket, clientAddress:str):
             clientSocket.send("Ready".encode())
             while(msg!="Starting"):
                 msg=clientSocket.recv(1024).decode()
-            side=sides[threading.current_thread()%2]
             game_info = f"{screen_width},{screen_height},{side}"
             clientSocket.send(game_info.encode())
             msg = ""
             while msg != "quit": #THE GAME IS BEING PLAYED!!!
                 msg = clientSocket.recv(1024).decode() #Paddle pos receive
-                
+                update_paddle_position(msg)
+
+                # Update ball position (simulate the game logic)
+                update_ball_position()
+
+                # Send updated game state to all clients
+                game_state = f"{paddle_positions['left']},{paddle_positions['right']},{scores['left']},{scores['right']},{ball_position['x']},{ball_position['y']}"
+                for socket in client_sockets:
+                    socket.send(game_state.encode())
 
     except Exception as e:
         print(f"Error with client {clientAddress}: {str(e)}")
 
     finally:
+        # Remove the client socket from the list
+        client_sockets.remove(clientSocket)
         clientSocket.close()
         print(f"Connection with client {clientAddress} closed.")
 
