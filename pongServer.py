@@ -18,6 +18,28 @@ side = "left"  # Replace with the actual side information
 # Store client sockets
 client_sockets = []
 
+gamedict={"Lpos":'',
+          "Rpos":'',
+          "Ballx":'',
+          "Bally":'',
+          "Lscore":'',
+          "Rscore":'',
+          "Sync":''}
+
+def update_gamedict(msg):
+    recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")
+    if(recSync>=gamedict["Sync"]): #New info! UPDATE
+        if(recSide=='left'):
+            gamedict['Lpos']=recPos
+        if(recSide=='right'):
+            gamedict['Rpos']=recPos
+        gamedict['Ballx']=recBallx
+        gamedict['Bally']=recBally
+        gamedict['Lscore']=recLscore
+        gamedict['Rscore']=recRscore
+        gamedict['Sync']=recSync
+
+
 def handle_client(clientSocket:socket, clientAddress:str):
     # Purpose:      This method is fired when the join button is clicked
     # Arguments:
@@ -43,13 +65,10 @@ def handle_client(clientSocket:socket, clientAddress:str):
             msg = ""
             while msg != "quit": #THE GAME IS BEING PLAYED!!!
                 msg = clientSocket.recv(1024).decode() #Paddle pos receive
-                update_paddle_position(msg)
-
-                # Update ball position (simulate the game logic)
-                update_ball_position()
+                update_gamedict(msg)
 
                 # Send updated game state to all clients
-                game_state = f"{paddle_positions['left']},{paddle_positions['right']},{scores['left']},{scores['right']},{ball_position['x']},{ball_position['y']}"
+                game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']}"
                 for socket in client_sockets:
                     socket.send(game_state.encode())
 
