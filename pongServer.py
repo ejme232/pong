@@ -13,10 +13,12 @@ import random
 # Define the game information
 screen_width = 640  # Set the desired width
 screen_height = 480  # Set the desired height
-side = "left"  # Replace with the actual side information
 
 # Store client sockets
 client_sockets = []
+
+# Maintain a counter for assigning sides to clients
+side_counter = 0
 
 gamedict={"Lpos":'',
           "Rpos":'',
@@ -45,12 +47,17 @@ def handle_client(clientSocket:socket, clientAddress:str):
     # Arguments:
     # clientSocket: Contains socket information for this client
     # clientAddress:Contains address for this client as a str object
-    global client_sockets
+    global client_sockets, side_counter
+
+    # Determine the side for the current client
+    side = "left" if side_counter == 0 else "right"
+    side_counter = (side_counter + 1) % 2  # Toggle between 0 and 1
+
     # Add the client socket to the list
-    client_sockets.append(clientSocket)
+    client_sockets.append({"socket": clientSocket, "side": side})
     
     try:
-        clientSocket.send("You're connected.".encode())
+        clientSocket.send(f"You're connected as {side}.".encode())
         msg=""
 
         while(threading.active_count()<3):
@@ -77,7 +84,7 @@ def handle_client(clientSocket:socket, clientAddress:str):
 
     finally:
         # Remove the client socket from the list
-        client_sockets.remove(clientSocket)
+        client_sockets.remove({"socket": clientSocket, "side": side})
         clientSocket.close()
         print(f"Connection with client {clientAddress} closed.")
 
