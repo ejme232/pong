@@ -162,6 +162,9 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
             recstring.append(int(i))
         paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, sync = recstring
         recstring=[]
+
+        print(f"Received recstring: {paddlepos}, {ball.rect.x}, {ball.rect.y}, {lScore}, {rScore}, {sync}")
+
         opponentPaddleObj.rect.y=paddlepos[playerPaddle=="left"]
         # =========================================================================================
 

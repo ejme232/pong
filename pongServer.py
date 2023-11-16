@@ -81,6 +81,8 @@ def handle_client(clientSocket:socket, clientAddress:str):
                 game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
                 for socket in client_sockets:
                     socket.send(game_state.encode())
+                
+                print(f"Sent game_state: {game_state}")
 
     except Exception as e:
         print(f"Error with client {clientAddress}: {str(e)}")
