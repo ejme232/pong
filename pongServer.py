@@ -58,6 +58,7 @@ def handle_client(clientSocket:socket, clientAddress:str):
 
     # Add the client socket to the list
     client_sockets.append(clientSocket)
+    print(f"added {clientSocket}")
     
     try:
         clientSocket.send(f"You're connected.".encode())
