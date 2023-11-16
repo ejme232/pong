@@ -75,7 +75,7 @@ def handle_client(clientSocket:socket, clientAddress:str):
                 update_gamedict(msg)
 
                 # Send updated game state to all clients
-                game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']}"
+                game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
                 for socket in client_sockets:
                     socket.send(game_state.encode())
 
