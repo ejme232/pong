@@ -50,14 +50,17 @@ def handle_client(clientSocket:socket, clientAddress:str):
     global client_sockets, side_counter
 
     # Determine the side for the current client
-    side = "left" if side_counter == 0 else "right"
+    if side_counter == 0:
+        side="left"
+    else: 
+        side="right"
     side_counter = (side_counter + 1) % 2  # Toggle between 0 and 1
 
     # Add the client socket to the list
     client_sockets.append({"socket": clientSocket, "side": side})
     
     try:
-        clientSocket.send(f"You're connected as {side}.".encode())
+        clientSocket.send(f"You're connected.".encode())
         msg=""
 
         while(threading.active_count()<3):
