@@ -22,15 +22,15 @@ side_counter = 0
 
 gamedict={"Lpos":'1',
           "Rpos":'1',
-          "Ballx":'1',
-          "Bally":'1',
-          "Lscore":'1',
-          "Rscore":'1',
-          "Sync":'1'}
+          "Ballx":'0',
+          "Bally":'0',
+          "Lscore":'0',
+          "Rscore":'0',
+          "Sync":'0'}
 
 def update_gamedict(msg):
     recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")
-    if(int(recSync)>=int(gamedict["Sync"])): #New info! UPDATE
+    if(int(recSync)>int(gamedict["Sync"])): #New info! UPDATE
         if(recSide=='left'):
             gamedict['Lpos']=recPos
         if(recSide=='right'):
