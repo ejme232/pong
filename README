@@ -1,1 +1,16 @@
-
+--------------------------------
+__________                      
+\______   \____   ____    ____  
+ |     ___/  _ \ /    \  / ___\ 
+ |    |  (  <_> )   |  \/ /_/  >
+ |____|   \____/|___|  /\___  / 
+                     \//_____/  
+--------------------------------
+1.  To run this game, start by running the pongServer.py file.
+2.  Next, record the IP address of the computer running this file.
+3.  To start playing the game, run the pongClient.py file on two
+seperate computers with different IP addresses.
+4.  On each of these computers, input the IP address of the computer
+running the pongServer.py file into the "Server IP:" box
+5.  Then enter the port "12321" into the "Server Port:" box.
+6.  Press "Join", then once two clients are connected, the game will start!
