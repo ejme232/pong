@@ -15,11 +15,6 @@ screen_width = 640  # Set the desired width
 screen_height = 480  # Set the desired height
 side = "left"  # Replace with the actual side information
 
-# Define initial game state
-paddle_positions = {"left": 0, "right": 0}  # Initial positions of paddles
-scores = {"left": 0, "right": 0}  # Initial scores for players
-ball_position = {"x": 0, "y": 0}  # Initial position of the ball
-
 # Store client sockets
 client_sockets = []
 
