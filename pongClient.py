@@ -160,7 +160,9 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         status=client.recv(1024).decode()
         for i in status.split(","):
             recstring.append(int(float(i)))
-        paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, sync = recstring
+        paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, recsync = recstring
+        if(recsync>sync):
+            sync=recsync
         recstring=[]
 
         print(f"Received recstring: {paddlepos}, {ball.rect.x}, {ball.rect.y}, {lScore}, {rScore}, {sync}")

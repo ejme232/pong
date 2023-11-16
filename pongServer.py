@@ -26,7 +26,7 @@ gamedict={"Lpos":'1',
           "Bally":'0',
           "Lscore":'0',
           "Rscore":'0',
-          "Sync":'0'}
+          "Sync":'-1'}
 
 def update_gamedict(msg):
     recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")
