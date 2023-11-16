@@ -28,7 +28,7 @@ gamedict={"Lpos":'',
 
 def update_gamedict(msg):
     recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")
-    if(recSync>=gamedict["Sync"]): #New info! UPDATE
+    if(int(recSync)>=int(gamedict["Sync"])): #New info! UPDATE
         if(recSide=='left'):
             gamedict['Lpos']=recPos
         if(recSide=='right'):
