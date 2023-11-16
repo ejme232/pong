@@ -160,7 +160,7 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         status=client.recv(1024).decode()
         for i in status.split(","):
             recstring.append(int(i))
-        paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore = recstring
+        paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, sync = recstring
         recstring=[]
         opponentPaddleObj.rect.y=paddlepos[playerPaddle=="left"]
         # =========================================================================================
