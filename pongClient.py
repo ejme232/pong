@@ -59,7 +59,7 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
     rScore = 0
 
     sync = 0
-    paddlepos=[]
+    paddlepos=[215,215]
     recstring=[]
 
     while True:

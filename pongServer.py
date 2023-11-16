@@ -20,13 +20,13 @@ client_sockets = []
 # Maintain a counter for assigning sides to clients
 side_counter = 0
 
-gamedict={"Lpos":'',
-          "Rpos":'',
-          "Ballx":'',
-          "Bally":'',
-          "Lscore":'',
-          "Rscore":'',
-          "Sync":''}
+gamedict={"Lpos":'1',
+          "Rpos":'1',
+          "Ballx":'1',
+          "Bally":'1',
+          "Lscore":'1',
+          "Rscore":'1',
+          "Sync":'1'}
 
 def update_gamedict(msg):
     recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")
@@ -57,7 +57,7 @@ def handle_client(clientSocket:socket, clientAddress:str):
     side_counter = (side_counter + 1) % 2  # Toggle between 0 and 1
 
     # Add the client socket to the list
-    client_sockets.append({"socket": clientSocket, "side": side})
+    client_sockets.append(clientSocket)
     
     try:
         clientSocket.send(f"You're connected.".encode())
@@ -89,7 +89,7 @@ def handle_client(clientSocket:socket, clientAddress:str):
 
     finally:
         # Remove the client socket from the list
-        client_sockets.remove({"socket": clientSocket, "side": side})
+        client_sockets.remove(clientSocket)
         clientSocket.close()
         print(f"Connection with client {clientAddress} closed.")
 
