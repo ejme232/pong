@@ -69,11 +69,11 @@ def handle_client(clientSocket:socket, clientAddress:str):
     try:
         clientSocket.send(f"You're connected.".encode()) #Tell client they're connected
 
-        while(threading.active_count()<3): #Wait until there are 3 threads
+        while len(client_sockets) < 2:  # Wait until there are 2 client sockets
             continue
         msg=""
 
-        if(threading.active_count()>=3): #There's 3 now! Start the game
+        if len(client_sockets) == 2:  # There are 2 now! Start the game
             clientSocket.send("Ready".encode()) #Tell client the game is ready to start
             while(msg!="Starting"): #When the client responds, send data
                 msg=clientSocket.recv(1024).decode()
