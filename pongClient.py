@@ -3,7 +3,6 @@
 # Email Addresses:          evan.meyers@uky.edu, connor.day@uky.edu
 # Date:                     11/17/2023
 # Purpose:                  Contains code for running client operations.
-# Misc:                     <Not Required.  Anything else you might want to include>
 # =================================================================================================
 
 import pygame

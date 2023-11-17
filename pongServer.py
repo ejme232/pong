@@ -3,7 +3,6 @@
 # Email Addresses:          evan.meyers@uky.edu, connor.day@uky.edu
 # Date:                     11/17/2023
 # Purpose:                  Contains code for running server-side operations.
-# Misc:                     <Not Required.  Anything else you might want to include>
 # =================================================================================================
 
 import socket
@@ -31,7 +30,11 @@ gamedict={"Lpos":'1',
           "Rscore":'0',
           "Sync":'-1'}
 
-def update_gamedict(msg):
+# Authors:       Connor Day, Evan Meyers
+# Purpose:       Update the game state dictionary based on the received message
+# Pre:           The message is formatted correctly and contains game state information
+# Post:          The game state dictionary is updated with the new information
+def update_gamedict(msg: str) -> None:
     #Parses msg into a list of strs
     recSide, recPos, recBallx, recBally, recBallxv, recBallyv, recLscore, recRscore, recSync=msg.split(",")
     if(int(recSync)>=int(gamedict["Sync"])): #If this passes, the info is new! UPDATE
@@ -47,12 +50,12 @@ def update_gamedict(msg):
         gamedict['Rscore']=recRscore
         gamedict['Sync']=recSync
 
-
-def handle_client(clientSocket:socket, clientAddress:str):
-    # Purpose:      This method is fired when the join button is clicked
-    # Arguments:
-    # clientSocket: Contains socket information for this client
-    # clientAddress:Contains address for this client as a str object
+# Authors:       Connor Day, Evan Meyers
+# Purpose:       Handle a client connection for a simple game server
+# Pre:           The server is running and listening for client connections
+# Post:          The client is connected, and the game state is communicated between clients
+def handle_client(clientSocket: socket.socket, clientAddress: str) -> None:
+    # This method is fired when the join button is clicked
     global client_sockets, side_counter
 
     # Determine the side for the current client
@@ -101,7 +104,11 @@ def handle_client(clientSocket:socket, clientAddress:str):
         clientSocket.close()
         print(f"Connection with client {clientAddress} closed.")
 
-def createThread(clientSocket:socket,clientAddress:str):
+# Authors:       Connor Day, Evan Meyers
+# Purpose:       Create a thread for the given socket and address to handle a client connection
+# Pre:           The client socket and address are provided
+# Post:          A new thread is created to handle the client connection
+def createThread(clientSocket: socket.socket, clientAddress: str) -> None:
     #   Purpose:        Creates thread for the given socket and address
     #   clientSocket: Contains socket information for this client
     #   clientAddress:Contains address for this client as a str object
