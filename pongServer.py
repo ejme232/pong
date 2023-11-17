@@ -32,8 +32,9 @@ gamedict={"Lpos":'1',
 UPDATE_INTERVAL = 0.05  # Adjust the update interval as needed
 
 def update_gamedict(msg):
-    recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")
-    if(int(recSync)>=int(gamedict["Sync"])): #New info! UPDATE
+    msglist=msg.split("/")
+    recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msglist[len(msglist)].split(",")
+    if(int(recSync)>int(gamedict["Sync"])): #New info! UPDATE
         if(recSide=='left'):
             gamedict['Lpos']=recPos
         if(recSide=='right'):
@@ -84,7 +85,9 @@ def handle_client(clientSocket:socket, clientAddress:str):
 
             while msg != "quit": #THE GAME IS BEING PLAYED!!!
                 msg = clientSocket.recv(1024).decode() #Paddle pos receive
-                update_gamedict(msg)
+                print(msg)
+                with lock:
+                    update_gamedict(msg)
 
                 current_time = time.time()
 
