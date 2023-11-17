@@ -163,15 +163,14 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         # opponent's game
         current_time = time.time()
 
-        while current_time - last_update_time < UPDATE_INTERVAL:
-            continue
-        status = client.recv(1024).decode()
-        for i in status.split(","):
-            recstring.append(int(float(i)))
-        paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, recsync = recstring
-        if recsync > sync:
-            sync = recsync
-        recstring = []
+        if current_time - last_update_time >= UPDATE_INTERVAL:
+            status = client.recv(1024).decode()
+            for i in status.split(","):
+                recstring.append(int(float(i)))
+            paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, recsync = recstring
+            if recsync > sync:
+                sync = recsync
+            recstring = []
 
         print(f"Received recstring: {paddlepos}, {ball.rect.x}, {ball.rect.y}, {lScore}, {rScore}, {sync}")
 
