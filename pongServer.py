@@ -9,7 +9,6 @@
 import socket
 import threading
 import random
-import time
 
 # Define the game information
 screen_width = 640  # Set the desired width
@@ -21,6 +20,7 @@ client_sockets = []
 # Maintain a counter for assigning sides to clients
 side_counter = 0
 
+# Default gamestate values. Should get updated as soon as the game starts
 gamedict={"Lpos":'1',
           "Rpos":'1',
           "Ballx":'0',
@@ -32,8 +32,9 @@ gamedict={"Lpos":'1',
           "Sync":'-1'}
 
 def update_gamedict(msg):
+    #Parses msg into a list of strs
     recSide, recPos, recBallx, recBally, recBallxv, recBallyv, recLscore, recRscore, recSync=msg.split(",")
-    if(int(recSync)>=int(gamedict["Sync"])): #New info! UPDATE
+    if(int(recSync)>=int(gamedict["Sync"])): #If this passes, the info is new! UPDATE
         if(recSide=='left'):
             gamedict['Lpos']=recPos
         if(recSide=='right'):
@@ -63,37 +64,35 @@ def handle_client(clientSocket:socket, clientAddress:str):
 
     # Add the client socket to the list
     client_sockets.append(clientSocket)
-    print(f"added {clientSocket}")
+    #print(f"added {clientSocket}") #Prints connected client (for debugging)
     
     try:
-        clientSocket.send(f"You're connected.".encode())
+        clientSocket.send(f"You're connected.".encode()) #Tell client they're connected
+
+        while(threading.active_count()<3): #Wait until there are 3 threads
+            continue
         msg=""
 
-        while(threading.active_count()<3):
-            continue
-
-        if(threading.active_count()>=3):
-            clientSocket.send("Ready".encode())
-            while(msg!="Starting"):
+        if(threading.active_count()>=3): #There's 3 now! Start the game
+            clientSocket.send("Ready".encode()) #Tell client the game is ready to start
+            while(msg!="Starting"): #When the client responds, send data
                 msg=clientSocket.recv(1024).decode()
-            # Ensure that all clients are ready before sending the game state
-            #with lock:
+            # Send game info to all clients
             game_info = f"{screen_width},{screen_height},{side}"
             clientSocket.send(game_info.encode())
-            msg = ""
             while msg != "quit": #THE GAME IS BEING PLAYED!!!
                 msg = clientSocket.recv(1024).decode() #Paddle pos receive
-                update_gamedict(msg)
+                update_gamedict(msg) #Update game state information stored on server
 
                 # Send updated game state to all clients
                 game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Ballxvel']},{gamedict['Ballyvel']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
-                with lock:
-                    #for socket in client_sockets:
+                with lock: #Ensure that clients only edit gamedict one at a time to avoid interleaving
                     clientSocket.send(game_state.encode())
                 
-                print(f"Sent game_state: {game_state}")
+                #print(f"Sent game_state: {game_state}") #Print sent game state (for debugging)
 
     except Exception as e:
+        #If error, print why!
         print(f"Error with client {clientAddress}: {str(e)}")
 
     finally:
@@ -102,14 +101,6 @@ def handle_client(clientSocket:socket, clientAddress:str):
         clientSocket.close()
         print(f"Connection with client {clientAddress} closed.")
 
-def chooseplayers(total:int):
-  p=random.sample(range(0,total),2)
-  return(p)
-
-def choosesides():
-  # Purpose:        Chooses side for each connection randomly
-  return(random.sample(["left","right"],2))
-
 def createThread(clientSocket:socket,clientAddress:str):
     #   Purpose:        Creates thread for the given socket and address
     #   clientSocket: Contains socket information for this client
@@ -117,21 +108,20 @@ def createThread(clientSocket:socket,clientAddress:str):
     client_thread = threading.Thread(target=handle_client, args=(clientSocket, clientAddress))
     client_thread.start()
 
+#Server set-up
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-myip=socket.gethostbyname(socket.gethostname()) # Stores user's ip (TEST THIS!!)
+myip=socket.gethostbyname(socket.gethostname()) # Stores user's ip
+print(myip) #So we can find the IP easier
 server.bind((myip, 12321))
 server.listen(5)
 lock=threading.Lock()
 
 try:
-    while True:
+    while True: #Server constantly accepts new connections
         clientSocket, clientAddress = server.accept()
-        createThread(clientSocket,clientAddress)
+        createThread(clientSocket,clientAddress) #When client connects, assign to a thread
         print(f"Thread {threading.active_count()} started with {clientAddress}")
-
-        if(threading.active_count()>=2):
-            threading.Event()
 
 finally:
     server.close()

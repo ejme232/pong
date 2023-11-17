@@ -11,7 +11,6 @@ import tkinter as tk
 import sys
 import socket
 import re
-import time
 
 from assets.code.helperCode import *
 
@@ -20,7 +19,6 @@ ipv4_pattern = "^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-
 
 #Regex pattern for valid port addresses. For handling invalid inputs
 port_pattern = "^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$"
-
 
 # This is the main game loop.  For the most part, you will not need to modify this.  The sections
 # where you should add to the code are marked.  Feel free to change any part of this project
@@ -142,7 +140,7 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         # where the ball is and the current score.
         # Feel free to change when the score is updated to suit your needs/requirements
         client.send(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{ball.xVel},{ball.yVel},{lScore},{rScore},{sync}".encode()) #Sends current status of this client's paddle
-        print(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}")
+        #print(f"Sent {playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}") #Prints what the client sends. For debugging
         # =========================================================================================
 
         # Drawing the dotted line in the center
@@ -166,16 +164,21 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         # =========================================================================================
         # Send your server update here at the end of the game loop to sync your game with your
         # opponent's game
-        status=client.recv(1024).decode()
-        for i in status.split(","):
+
+        status=client.recv(1024).decode() #Recieve from server
+        #print(f"Received {status}") #Print recieved message (for debugging)
+
+        for i in status.split(","): #Parse in to list of ints
             recstring.append(int(float(i)))
+        #Assign game state variables sent in to their respective positions.
         paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, ball.xVel, ball.yVel, lScore, rScore, recsync = recstring
+        #Only update sync if needed!
         if(recsync>sync):
             sync=recsync
+        #Empty for reuse
         recstring=[]
 
-        print(status)
-
+        #Update oppponent paddle based on recieved information.
         opponentPaddleObj.rect.y=paddlepos[playerPaddle=="left"]
         # =========================================================================================
 
