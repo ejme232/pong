@@ -47,7 +47,6 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
     rightPaddle = Paddle(pygame.Rect(screenWidth-20, paddleStartPosY, paddleWidth, paddleHeight))
 
     ball = Ball(pygame.Rect(screenWidth/2, screenHeight/2, 5, 5), -5, 0)
-    ball.xVel=5
 
     if playerPaddle == "left":
         opponentPaddleObj = rightPaddle
@@ -81,14 +80,6 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
 
             elif event.type == pygame.KEYUP:
                 playerPaddleObj.moving = ""
-
-        # =========================================================================================
-        # Your code here to send an update to the server on your paddle's information,
-        # where the ball is and the current score.
-        # Feel free to change when the score is updated to suit your needs/requirements
-        client.send(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}".encode()) #Sends current status of this client's paddle
-        print(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}")
-        # =========================================================================================
 
         # Update the player paddle and opponent paddle's location on the screen
         for paddle in [playerPaddleObj, opponentPaddleObj]:
@@ -136,6 +127,14 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
             
             pygame.draw.rect(screen, WHITE, ball)
             # ==== End Ball Logic =================================================================
+
+        # =========================================================================================
+        # Your code here to send an update to the server on your paddle's information,
+        # where the ball is and the current score.
+        # Feel free to change when the score is updated to suit your needs/requirements
+        client.send(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}".encode()) #Sends current status of this client's paddle
+        print(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}")
+        # =========================================================================================
 
         # Drawing the dotted line in the center
         for i in centerLine:
