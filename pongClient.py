@@ -10,8 +10,17 @@ import pygame
 import tkinter as tk
 import sys
 import socket
+import re
+import time
 
 from assets.code.helperCode import *
+
+#Regex pattern for valid IP addresses. For handling invalid inputs
+ipv4_pattern = "^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+
+#Regex pattern for valid port addresses. For handling invalid inputs
+port_pattern = "^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$"
+
 
 # This is the main game loop.  For the most part, you will not need to modify this.  The sections
 # where you should add to the code are marked.  Feel free to change any part of this project
@@ -63,6 +72,7 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
     recstring=[]
 
     while True:
+        time.sleep(.01)
         # Wiping the screen
         screen.fill((0,0,0))
 
@@ -185,6 +195,16 @@ def joinServer(ip:str, port:str, errorLabel:tk.Label, app:tk.Tk) -> None:
     # errorLabel    A tk label widget, modify it's text to display messages to the user (example below)
     # app           The tk window object, needed to kill the window
     
+    #If user inputs an invalid IP, this is to avoid a crash. Boots back to input screen
+    if(not re.match(ipv4_pattern, ip)): 
+        errorLabel.config(text="Invalid IP!")
+        return
+
+    #If user inputs an invalid port, this is to avoid a crash
+    if(not re.match(port_pattern, port)):
+        errorLabel.config(text="Invalid port!")
+        return
+
     # Create a socket and connect to the server
     # You don't have to use SOCK_STREAM, use what you think is best
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
