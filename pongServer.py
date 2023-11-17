@@ -32,12 +32,33 @@ gamedict={"Lpos":'1',
 
 UPDATE_INTERVAL = 0.05  # Adjust the update interval as needed
 
+def get_recent(msg):
+    msglist=msg.split("/")
+    recentmsg=msglist[len(msglist)-1]
+    return(recentmsg)
+
+def handle_message(msg):
+    print(msg)
+    msg=get_recent(msg)
+    print(msg)
+    if(msg==''):
+        return
+    msglist=msg.split(',')
+    if(msglist[0]=='MyUpdate'):
+        with lock:
+            update_gamedict(msg)
+    if(msglist[0]=='YourData'):
+        with lock:
+            game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
+            clientSocket.send(game_state.encode())
+            print(f"Sent game_state: {game_state} to {clientSocket}") #print sent string (for testing)
+
 def update_gamedict(msg):
     # Purpose:  Parses message into individual variables and stores this information (if needed)
     # Arguements:   
     # msg:      Contains information from the client
     msglist=msg.split("/")
-    recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msglist[len(msglist)-1].split(",")
+    update, recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msglist[len(msglist)-1].split(",")
     if(int(recSync)>int(gamedict["Sync"])): #New info! UPDATE
         if(recSide=='left'):
             gamedict['Lpos']=recPos
@@ -88,21 +109,19 @@ def handle_client(clientSocket:socket, clientAddress:str):
             last_update_time = time.time()
 
             while msg != "quit": #THE GAME IS BEING PLAYED!!!
-                msg = clientSocket.recv(1024).decode() #Paddle pos receive
-                print(msg) #Print received string (for testing)
-                with lock:
-                    update_gamedict(msg) #Ensures both threads won't update this info at the same time
-
-                current_time = time.time()
-
-                #Only send more info if enough time has passed (reduces lag)
-                if current_time - last_update_time >= UPDATE_INTERVAL:
+                msg = clientSocket.recv(1024).decode()
+                print(f"Recieved {msg}")
+                if(msg=='MyUpdate'):
+                    clientSocket.send("Send it".encode())
+                    print("Sent Send it")
+                    msg = clientSocket.recv(1024).decode()
+                    print(f"Recieved {msg}")
+                    update_gamedict(msg)
+                elif(msg=="YourData"):
                     with lock:
                         game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
                         clientSocket.send(game_state.encode())
                         print(f"Sent game_state: {game_state} to {clientSocket}") #print sent string (for testing)
-                    
-                    last_update_time = time.time()
 
 
     except Exception as e:
