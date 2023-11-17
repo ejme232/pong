@@ -111,18 +111,9 @@ def handle_client(clientSocket:socket, clientAddress:str):
             while msg != "quit": #THE GAME IS BEING PLAYED!!!
                 msg = clientSocket.recv(1024).decode()
                 print(f"Recieved {msg}")
-                if(msg=='MyUpdate'):
-                    clientSocket.send("Send it".encode())
-                    print("Sent Send it")
-                    msg = clientSocket.recv(1024).decode()
-                    print(f"Recieved {msg}")
-                    update_gamedict(msg)
-                elif(msg=="YourData"):
-                    with lock:
-                        game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
-                        clientSocket.send(game_state.encode())
-                        print(f"Sent game_state: {game_state} to {clientSocket}") #print sent string (for testing)
-
+                if (msg==''):
+                    continue
+                handle_message(msg)
 
     except Exception as e:
         print(f"Error with client {clientAddress}: {str(e)}")
