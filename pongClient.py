@@ -47,6 +47,7 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
     rightPaddle = Paddle(pygame.Rect(screenWidth-20, paddleStartPosY, paddleWidth, paddleHeight))
 
     ball = Ball(pygame.Rect(screenWidth/2, screenHeight/2, 5, 5), -5, 0)
+    ball.xVel=5
 
     if playerPaddle == "left":
         opponentPaddleObj = rightPaddle

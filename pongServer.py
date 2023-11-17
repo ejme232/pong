@@ -30,7 +30,7 @@ gamedict={"Lpos":'1',
 
 def update_gamedict(msg):
     recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")
-    if(int(recSync)>int(gamedict["Sync"])): #New info! UPDATE
+    if(int(recSync)>=int(gamedict["Sync"])): #New info! UPDATE
         if(recSide=='left'):
             gamedict['Lpos']=recPos
         if(recSide=='right'):
@@ -72,9 +72,9 @@ def handle_client(clientSocket:socket, clientAddress:str):
             while(msg!="Starting"):
                 msg=clientSocket.recv(1024).decode()
             # Ensure that all clients are ready before sending the game state
-            with lock:
-                game_info = f"{screen_width},{screen_height},{side}"
-                clientSocket.send(game_info.encode())
+            #with lock:
+            game_info = f"{screen_width},{screen_height},{side}"
+            clientSocket.send(game_info.encode())
             msg = ""
             while msg != "quit": #THE GAME IS BEING PLAYED!!!
                 msg = clientSocket.recv(1024).decode() #Paddle pos receive
@@ -83,8 +83,8 @@ def handle_client(clientSocket:socket, clientAddress:str):
                 # Send updated game state to all clients
                 game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
                 with lock:
-                    for socket in client_sockets:
-                        socket.send(game_state.encode())
+                    #for socket in client_sockets:
+                    clientSocket.send(game_state.encode())
                 
                 print(f"Sent game_state: {game_state}")
 
