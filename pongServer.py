@@ -93,7 +93,7 @@ def handle_client(clientSocket:socket, clientAddress:str):
                     with lock:
                         clientSocket.send(game_state.encode())
                     
-                    last_update_time = current_time
+                    last_update_time = time.time()
 
                 print(f"Sent game_state: {game_state}")
 

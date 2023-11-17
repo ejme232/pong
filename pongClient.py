@@ -171,12 +171,11 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
             if recsync > sync:
                 sync = recsync
             recstring = []
+            last_update_time = time.time()
 
         print(f"Received recstring: {paddlepos}, {ball.rect.x}, {ball.rect.y}, {lScore}, {rScore}, {sync}")
 
         opponentPaddleObj.rect.y=paddlepos[playerPaddle=="left"]
-
-        last_update_time = current_time
         # =========================================================================================
 
 
