@@ -72,7 +72,6 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
     recstring=[]
 
     while True:
-        time.sleep(.01)
         # Wiping the screen
         screen.fill((0,0,0))
 
@@ -142,7 +141,7 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         # Your code here to send an update to the server on your paddle's information,
         # where the ball is and the current score.
         # Feel free to change when the score is updated to suit your needs/requirements
-        client.send(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}".encode()) #Sends current status of this client's paddle
+        client.send(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{ball.xVel},{ball.yVel},{lScore},{rScore},{sync}".encode()) #Sends current status of this client's paddle
         print(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}")
         # =========================================================================================
 
@@ -170,12 +169,12 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         status=client.recv(1024).decode()
         for i in status.split(","):
             recstring.append(int(float(i)))
-        paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, recsync = recstring
+        paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, ball.xVel, ball.yVel, lScore, rScore, recsync = recstring
         if(recsync>sync):
             sync=recsync
         recstring=[]
 
-        print(f"Received recstring: {paddlepos}, {ball.rect.x}, {ball.rect.y}, {lScore}, {rScore}, {sync}")
+        print(status)
 
         opponentPaddleObj.rect.y=paddlepos[playerPaddle=="left"]
         # =========================================================================================

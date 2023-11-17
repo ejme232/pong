@@ -9,6 +9,7 @@
 import socket
 import threading
 import random
+import time
 
 # Define the game information
 screen_width = 640  # Set the desired width
@@ -24,12 +25,14 @@ gamedict={"Lpos":'1',
           "Rpos":'1',
           "Ballx":'0',
           "Bally":'0',
+          "Ballxvel":'0',
+          "Ballyvel":'0',
           "Lscore":'0',
           "Rscore":'0',
           "Sync":'-1'}
 
 def update_gamedict(msg):
-    recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")
+    recSide, recPos, recBallx, recBally, recBallxv, recBallyv, recLscore, recRscore, recSync=msg.split(",")
     if(int(recSync)>=int(gamedict["Sync"])): #New info! UPDATE
         if(recSide=='left'):
             gamedict['Lpos']=recPos
@@ -37,6 +40,8 @@ def update_gamedict(msg):
             gamedict['Rpos']=recPos
         gamedict['Ballx']=recBallx
         gamedict['Bally']=recBally
+        gamedict['Ballxvel']=recBallxv
+        gamedict['Ballyvel']=recBallyv
         gamedict['Lscore']=recLscore
         gamedict['Rscore']=recRscore
         gamedict['Sync']=recSync
@@ -81,7 +86,7 @@ def handle_client(clientSocket:socket, clientAddress:str):
                 update_gamedict(msg)
 
                 # Send updated game state to all clients
-                game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
+                game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Ballxvel']},{gamedict['Ballyvel']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
                 with lock:
                     #for socket in client_sockets:
                     clientSocket.send(game_state.encode())
