@@ -10,8 +10,11 @@ import pygame
 import tkinter as tk
 import sys
 import socket
+import time
 
 from assets.code.helperCode import *
+
+UPDATE_INTERVAL = 0.1  # Update interval on the client side
 
 # This is the main game loop.  For the most part, you will not need to modify this.  The sections
 # where you should add to the code are marked.  Feel free to change any part of this project
@@ -61,6 +64,7 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
     sync = 0
     paddlepos=[215,215]
     recstring=[]
+    last_update_time = time.time()  # Initialize the last_update_time variable
 
     while True:
         # Wiping the screen
@@ -157,17 +161,22 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         # =========================================================================================
         # Send your server update here at the end of the game loop to sync your game with your
         # opponent's game
-        status=client.recv(1024).decode()
-        for i in status.split(","):
-            recstring.append(int(float(i)))
-        paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, recsync = recstring
-        if(recsync>sync):
-            sync=recsync
-        recstring=[]
+        current_time = time.time()
+
+        if current_time - last_update_time >= UPDATE_INTERVAL:
+            status = client.recv(1024).decode()
+            for i in status.split(","):
+                recstring.append(int(float(i)))
+            paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, recsync = recstring
+            if recsync > sync:
+                sync = recsync
+            recstring = []
 
         print(f"Received recstring: {paddlepos}, {ball.rect.x}, {ball.rect.y}, {lScore}, {rScore}, {sync}")
 
         opponentPaddleObj.rect.y=paddlepos[playerPaddle=="left"]
+
+        last_update_time = current_time
         # =========================================================================================
 
 

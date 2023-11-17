@@ -9,6 +9,7 @@
 import socket
 import threading
 import random
+import time
 
 # Define the game information
 screen_width = 640  # Set the desired width
@@ -27,6 +28,8 @@ gamedict={"Lpos":'1',
           "Lscore":'0',
           "Rscore":'0',
           "Sync":'-1'}
+
+UPDATE_INTERVAL = 0.1  # Adjust the update interval as needed
 
 def update_gamedict(msg):
     recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")
@@ -76,16 +79,22 @@ def handle_client(clientSocket:socket, clientAddress:str):
             game_info = f"{screen_width},{screen_height},{side}"
             clientSocket.send(game_info.encode())
             msg = ""
+
+            last_update_time = time.time()
+
             while msg != "quit": #THE GAME IS BEING PLAYED!!!
                 msg = clientSocket.recv(1024).decode() #Paddle pos receive
                 update_gamedict(msg)
 
-                # Send updated game state to all clients
-                game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
-                with lock:
-                    #for socket in client_sockets:
-                    clientSocket.send(game_state.encode())
-                
+                current_time = time.time()
+
+                if current_time - last_update_time >= UPDATE_INTERVAL:
+                    game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
+                    with lock:
+                        clientSocket.send(game_state.encode())
+                    
+                    last_update_time = current_time
+
                 print(f"Sent game_state: {game_state}")
 
     except Exception as e:
