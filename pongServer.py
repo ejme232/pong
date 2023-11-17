@@ -33,7 +33,7 @@ UPDATE_INTERVAL = 0.05  # Adjust the update interval as needed
 
 def update_gamedict(msg):
     msglist=msg.split("/")
-    recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msglist[len(msglist)].split(",")
+    recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msglist[len(msglist)-1].split(",")
     if(int(recSync)>int(gamedict["Sync"])): #New info! UPDATE
         if(recSide=='left'):
             gamedict['Lpos']=recPos
