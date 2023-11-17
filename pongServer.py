@@ -29,7 +29,7 @@ gamedict={"Lpos":'1',
           "Rscore":'0',
           "Sync":'-1'}
 
-UPDATE_INTERVAL = 0.1  # Adjust the update interval as needed
+UPDATE_INTERVAL = 0.05  # Adjust the update interval as needed
 
 def update_gamedict(msg):
     recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")

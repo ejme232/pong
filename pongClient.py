@@ -14,7 +14,7 @@ import time
 
 from assets.code.helperCode import *
 
-UPDATE_INTERVAL = 0.1  # Update interval on the client side
+UPDATE_INTERVAL = 0.05  # Update interval on the client side
 
 # This is the main game loop.  For the most part, you will not need to modify this.  The sections
 # where you should add to the code are marked.  Feel free to change any part of this project
@@ -163,19 +163,21 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         # opponent's game
         current_time = time.time()
 
-        if current_time - last_update_time >= UPDATE_INTERVAL:
-            status = client.recv(1024).decode()
-            for i in status.split(","):
-                recstring.append(int(float(i)))
-            paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, recsync = recstring
-            if recsync > sync:
-                sync = recsync
-            recstring = []
-            last_update_time = time.time()
+        while current_time - last_update_time < UPDATE_INTERVAL:
+            continue
+        status = client.recv(1024).decode()
+        for i in status.split(","):
+            recstring.append(int(float(i)))
+        paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, recsync = recstring
+        if recsync > sync:
+            sync = recsync
+        recstring = []
 
         print(f"Received recstring: {paddlepos}, {ball.rect.x}, {ball.rect.y}, {lScore}, {rScore}, {sync}")
 
         opponentPaddleObj.rect.y=paddlepos[playerPaddle=="left"]
+
+        last_update_time = time.time()
         # =========================================================================================
 
 
