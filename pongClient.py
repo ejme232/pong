@@ -10,18 +10,8 @@ import pygame
 import tkinter as tk
 import sys
 import socket
-import time
-import re
 
 from assets.code.helperCode import *
-
-UPDATE_INTERVAL = 0.05  # Update interval on the client side
-
-#Regex pattern for valid IP addresses. For handling invalid inputs
-ipv4_pattern = "^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-
-#Regex pattern for valid port addresses. For handling invalid inputs
-port_pattern = "^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$"
 
 # This is the main game loop.  For the most part, you will not need to modify this.  The sections
 # where you should add to the code are marked.  Feel free to change any part of this project
@@ -71,7 +61,6 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
     sync = 0
     paddlepos=[215,215]
     recstring=[]
-    last_update_time = time.time()  # Initialize the last_update_time variable
 
     while True:
         # Wiping the screen
@@ -143,8 +132,8 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         # Your code here to send an update to the server on your paddle's information,
         # where the ball is and the current score.
         # Feel free to change when the score is updated to suit your needs/requirements
-        client.send(f"/MyUpdate,{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}".encode()) #Sends current status of this client's paddle
-        print(f"/{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}")
+        client.send(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}".encode()) #Sends current status of this client's paddle
+        print(f"{playerPaddle},{playerPaddleObj.rect.y},{ball.rect.x},{ball.rect.y},{lScore},{rScore},{sync}")
         # =========================================================================================
 
         # Drawing the dotted line in the center
@@ -168,23 +157,15 @@ def playGame(screenWidth:int, screenHeight:int, playerPaddle:str, client:socket.
         # =========================================================================================
         # Send your server update here at the end of the game loop to sync your game with your
         # opponent's game
-        current_time = time.time()
+        status=client.recv(1024).decode()
+        for i in status.split(","):
+            recstring.append(int(float(i)))
+        paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, recsync = recstring
+        if(recsync>sync):
+            sync=recsync
+        recstring=[]
 
-        if current_time - last_update_time >= UPDATE_INTERVAL:
-            client.send("/YourData,".encode())
-            print("Sent YourData")
-            status = client.recv(1024).decode()
-            print(f"Received recstring: {status}")
-            for i in status.split(","):
-                recstring.append(int(float(i)))
-            if(len(recstring)!=7):
-                pass
-            else:
-                if recsync >= sync:
-                    sync = recsync
-                    paddlepos[0], paddlepos[1], ball.rect.x, ball.rect.y, lScore, rScore, recsync = recstring
-                recstring = []
-                last_update_time = time.time()
+        print(f"Received recstring: {paddlepos}, {ball.rect.x}, {ball.rect.y}, {lScore}, {rScore}, {sync}")
 
         opponentPaddleObj.rect.y=paddlepos[playerPaddle=="left"]
         # =========================================================================================
@@ -204,16 +185,6 @@ def joinServer(ip:str, port:str, errorLabel:tk.Label, app:tk.Tk) -> None:
     # errorLabel    A tk label widget, modify it's text to display messages to the user (example below)
     # app           The tk window object, needed to kill the window
     
-    #If user inputs an invalid IP, this is to avoid a crash. Boots back to input screen
-    if(not re.match(ipv4_pattern, ip)): 
-        errorLabel.config(text="Invalid IP!")
-        return
-    
-    #If user inputs an invalid port, this is to avoid a crash
-    if(not re.match(port_pattern, port)):
-        errorLabel.config(text="Invalid port!")
-        return
-
     # Create a socket and connect to the server
     # You don't have to use SOCK_STREAM, use what you think is best
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

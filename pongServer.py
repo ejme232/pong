@@ -8,8 +8,7 @@
 
 import socket
 import threading
-import random #Added
-import time #Added
+import random
 
 # Define the game information
 screen_width = 640  # Set the desired width
@@ -21,7 +20,6 @@ client_sockets = []
 # Maintain a counter for assigning sides to clients
 side_counter = 0
 
-# Default game data. Should get updated and changed as soon as game starts
 gamedict={"Lpos":'1',
           "Rpos":'1',
           "Ballx":'0',
@@ -30,36 +28,9 @@ gamedict={"Lpos":'1',
           "Rscore":'0',
           "Sync":'-1'}
 
-UPDATE_INTERVAL = 0.05  # Adjust the update interval as needed
-
-def get_recent(msg):
-    msglist=msg.split("/")
-    recentmsg=msglist[len(msglist)-1]
-    return(recentmsg)
-
-def handle_message(msg):
-    print(msg)
-    msg=get_recent(msg)
-    print(msg)
-    if(msg==''):
-        return
-    msglist=msg.split(',')
-    if(msglist[0]=='MyUpdate'):
-        with lock:
-            update_gamedict(msg)
-    if(msglist[0]=='YourData'):
-        with lock:
-            game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
-            clientSocket.send(game_state.encode())
-            print(f"Sent game_state: {game_state} to {clientSocket}") #print sent string (for testing)
-
 def update_gamedict(msg):
-    # Purpose:  Parses message into individual variables and stores this information (if needed)
-    # Arguements:   
-    # msg:      Contains information from the client
-    msglist=msg.split("/")
-    update, recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msglist[len(msglist)-1].split(",")
-    if(int(recSync)>int(gamedict["Sync"])): #New info! UPDATE
+    recSide, recPos, recBallx, recBally, recLscore, recRscore, recSync=msg.split(",")
+    if(int(recSync)>=int(gamedict["Sync"])): #New info! UPDATE
         if(recSide=='left'):
             gamedict['Lpos']=recPos
         if(recSide=='right'):
@@ -105,15 +76,17 @@ def handle_client(clientSocket:socket, clientAddress:str):
             game_info = f"{screen_width},{screen_height},{side}"
             clientSocket.send(game_info.encode())
             msg = ""
-
-            last_update_time = time.time()
-
             while msg != "quit": #THE GAME IS BEING PLAYED!!!
-                msg = clientSocket.recv(1024).decode()
-                print(f"Recieved {msg}")
-                if (msg==''):
-                    continue
-                handle_message(msg)
+                msg = clientSocket.recv(1024).decode() #Paddle pos receive
+                update_gamedict(msg)
+
+                # Send updated game state to all clients
+                game_state = f"{gamedict['Lpos']},{gamedict['Rpos']},{gamedict['Ballx']},{gamedict['Bally']},{gamedict['Lscore']},{gamedict['Rscore']},{gamedict['Sync']}"
+                with lock:
+                    #for socket in client_sockets:
+                    clientSocket.send(game_state.encode())
+                
+                print(f"Sent game_state: {game_state}")
 
     except Exception as e:
         print(f"Error with client {clientAddress}: {str(e)}")
@@ -141,8 +114,7 @@ def createThread(clientSocket:socket,clientAddress:str):
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-myip=socket.gethostbyname(socket.gethostname()) # Stores user's ip
-print(myip) # So it's easier to see
+myip=socket.gethostbyname(socket.gethostname()) # Stores user's ip (TEST THIS!!)
 server.bind((myip, 12321))
 server.listen(5)
 lock=threading.Lock()
@@ -150,7 +122,7 @@ lock=threading.Lock()
 try:
     while True:
         clientSocket, clientAddress = server.accept()
-        createThread(clientSocket,clientAddress) #Creates thread for the accepted client
+        createThread(clientSocket,clientAddress)
         print(f"Thread {threading.active_count()} started with {clientAddress}")
 
         if(threading.active_count()>=2):
