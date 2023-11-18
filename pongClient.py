@@ -213,7 +213,6 @@ def joinServer(ip:str, port:str, errorLabel:tk.Label, app:tk.Tk) -> None:
     # Get the required information from your server (screen width, height & player paddle, "left or "right)
     try:
         client.connect((ip,int(port))) # Connecting to server
-        errorLabel.config(text="Connection successful!")
 
         msg=client.recv(1024).decode()
         if(msg=="You're connected."):
