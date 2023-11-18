@@ -7,9 +7,10 @@ __________
                      \//_____/  
 --------------------------------
 1.  To run this game, start by running the pongServer.py file.
-2.  Next, record the IP address of the computer running this file.
+2.  Next, record the IP address of the computer running this file. It
+will be printed into the terminal.
 3.  To start playing the game, run the pongClient.py file on two
-seperate computers with different IP addresses.
+seperate computers with different IP addresses from each other.
 4.  On each of these computers, input the IP address of the computer
 running the pongServer.py file into the "Server IP:" box
 5.  Then enter the port "12321" into the "Server Port:" box.
